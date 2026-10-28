@@ -9,3 +9,4 @@ data/
 *.tsv.gz
 *.npz
 .DS_Store
+logs/

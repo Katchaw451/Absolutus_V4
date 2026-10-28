@@ -1,20 +1,32 @@
-# Data audit (Phase 0, partial)
+# Data audit (Phase 0, metadata only)
 
-**Nothing below was downloaded.** The build environment could only reach PyPI and GitHub; STRING,
-NCBI/GEO and CELLxGENE were unreachable (connection refused by the sandbox proxy). Entries come from
-web-search snippets of the providers' pages and must be verified from a machine with network access.
+Source: CELLxGENE Census 2025-11-08, queried from PalmFace with `scripts/audit_census_obs.py` and
+`scripts/audit_census_celltypes.py` (outputs: `docs/DATA_AUDIT_CENSUS.md`, `docs/DATA_AUDIT_CELLTYPES.md`).
+Only metadata was read. Expression data of the sealed cohorts has not been opened.
 
-| Resource | Role | What the search showed | Status |
-|---|---|---|---|
-| SEA-AD cohort (Allen Institute) | AD discovery or replication | snRNA-seq/snATAC-seq processed data from 84 aged donors on the AWS Registry of Open Data (Allen community post) | verify download, size, metadata |
-| SEA-AD MTG reference | cell-type reference | 166,868 nuclei, 5 younger donors; h5ad of several GB listed on brain-map.org | not a disease cohort |
-| CELLxGENE Census | programmatic access to many public datasets | Python/R API; source h5ad can be downloaded per dataset | verify AD/PD datasets present |
-| Cross-dementia h5ad | AD/FTD/PSP vs controls | third-party README describes 432,555 cells, 3 regions, 9 cell types, on a CELLxGENE collection and Synapse (syn52074156) | verify; Synapse may need login |
-| PD single-nucleus data | PD arm | AD/PD papers report using public PD snRNA-seq (hundreds of thousands of nuclei); accession not identified here | **unverified: biggest risk** |
-| STRING | PPI network | not checked | verify version, licence, confidence thresholds |
-| Open Targets / GWAS Catalog | held-out genetic validation | not checked | verify access, define AD/PD gene sets BEFORE discovery |
-| ROSMAP / AMP-AD | large AD cohorts | controlled access | exclude unless access is already approved |
+## Cohorts (numbers from the audit outputs)
 
-Planning notes: several datasets are multi-GB h5ad files; use backed mode, pseudobulk early, and
-record actual RAM limits. If no PD single-nucleus cohort is usable, fall back to bulk PD with
-cell-composition adjustment and state it as a limitation.
+| Cohort | Disease labels (donors) | Region(s) | Assay | Planned role |
+|---|---|---|---|---|
+| SEA-AD, DLPFC | dementia 39, normal 44 (83 donors; 1,395,601 cells) | dorsolateral prefrontal cortex | 10x 3' v3 (1.31 M cells), 10x multiome (86 k) | AD discovery |
+| PD multi-region atlas | Parkinson disease 73, normal 24 (97 donors overall; 90 donors / 503,414 cells in prefrontal cortex) | prefrontal cortex, M1, V1, medial globus pallidus, dorsal motor nucleus of vagus (no substantia nigra) | 10x 3' v3 | PD discovery (prefrontal cortex) |
+| Layer-4 resilience (preprint) | AD 31, normal 15 (46 donors); 42 donors / 288,030 cells in Brodmann area 9 | BA9, BA7, BA17 | 10x v2, v3 and Drop-seq mixed | AD replication (BA9) |
+| Kamath substantia nigra | PD 6, normal 8, Lewy body dementia 4 (18 donors; 387,483 cells in 7 cell-type datasets) | substantia nigra pars compacta | 10x 3' v3 | PD replication, exploratory (region differs; LBD excluded from the PD contrast) |
+| Rexach cross-dementia | AD 10, Pick 9, PSP 11, normal 10 (40 donors; 432,555 cells) | insular cortex, BA4, V1 | 10x v2 (BA4, V1) and v3 (insular): assay is confounded with region | disease-specificity control, later |
+| SEA-AD, MTG | 89 donors, 83 of them also in the DLPFC dataset | middle temporal gyrus | | not independent of SEA-AD DLPFC: not used for replication |
+| Leng entorhinal / SFG | AD 7, normal 3 per region | | | too small; used only as a smoke-test dataset |
+
+## Limitations that follow from the data
+
+- Census carries no PMI, RIN or batch; available covariates are age (from `development_stage`, sometimes a lower bound such as "80 and over"), sex and assay.
+- SEA-AD labels are "dementia" vs "normal", not neuropathologically defined AD.
+- `donor_id` strings are only comparable within one study. Whether SEA-AD, the resilience dataset and the PD atlas share donors is not answerable from Census; it must be checked in the publications before freezing the protocol.
+- The PD atlas has no substantia nigra, so cross-disease comparison is matched on prefrontal cortex; the Kamath replication is in a different region.
+- "central nervous system macrophage" (PD atlas) is pooled with microglia (flagged in `celltypes.py`).
+
+## Still to verify
+
+- Open Targets: the GraphQL API refused PalmFace (HTTP 403); bulk files on the EBI FTP are the fallback (test pending).
+- STRING version, licence and the Ensembl-to-symbol mapping.
+- Per-region PD/normal donor split inside the prefrontal cortex of the PD atlas.
+- Published donor provenance of each cohort (to confirm independence).
