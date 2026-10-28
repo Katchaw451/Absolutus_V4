@@ -80,3 +80,32 @@ def save_group(stem, counts, donors: pd.DataFrame) -> None:
 def load_group(stem):
     stem = Path(stem)
     return sparse.load_npz(f"{stem}.counts.npz").tocsr(), pd.read_csv(f"{stem}.donors.csv")
+
+
+def group_cells_by_class(obs: pd.DataFrame, classes, key: str = "donor_id", meta_cols=META_COLS):
+    """One group per (cell class, donor). Returns (table with a 'cell_class' column plus the
+    donor columns of `group_cells`, group index per row of `obs`)."""
+    combo = np.char.add(np.char.add(np.asarray(classes, dtype=str), "\t"), obs[key].astype(str).to_numpy())
+    codes, uniques = pd.factorize(combo, sort=True)
+    split = [u.split("\t", 1) for u in uniques]
+    table = {"cell_class": np.array([s[0] for s in split]), key: np.array([s[1] for s in split]),
+             "n_cells": np.bincount(codes, minlength=len(uniques))}
+    for c in meta_cols:
+        agg = obs[c].astype(str).groupby(codes).agg(lambda s: "; ".join(sorted(set(s))))
+        table[c] = agg.to_numpy()
+    return pd.DataFrame(table), codes
+
+
+F32_EXACT = 2 ** 24
+
+
+def add_entries(dense_flat, groups, cols, vals, n_vars: int) -> None:
+    """dense_flat[group * n_vars + col] += val (vectorised; duplicates are summed)."""
+    np.add.at(dense_flat, np.asarray(groups, np.int64) * n_vars + np.asarray(cols, np.int64),
+              np.asarray(vals, dense_flat.dtype))
+
+
+def check_exact(dense, dtype) -> None:
+    """float32 accumulators are exact for integer counts below 2**24; refuse to continue otherwise."""
+    if np.dtype(dtype) == np.float32 and dense.size and float(dense.max()) >= F32_EXACT:
+        raise ValueError("a pseudobulk sum reached 2**24; rerun with dtype=float64")

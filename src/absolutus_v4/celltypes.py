@@ -46,6 +46,9 @@ _MAP = {
 EXCLUDED = {
     "vascular leptomeningeal cell": "non-parenchymal cell type",
     "pericyte": "mural cell, not in the primary classes",
+    "mural cell": "mural cell (pericyte / smooth muscle), not in the primary classes",
+    "leukocyte": "peripheral immune cell",
+    "central nervous system neuron": "unspecified neuron type; cannot be assigned to excitatory/inhibitory",
     "T cell": "infiltrating immune cell",
     "ependymal cell": "rare, not in the primary classes",
     "macrophage": "border/peripheral macrophage (rare); not pooled with microglia",

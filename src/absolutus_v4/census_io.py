@@ -6,7 +6,19 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from .pseudobulk_stream import OBS_COLS, accumulate_chunks, group_cells, value_filter
+from scipy import sparse
+
+from .pseudobulk_stream import OBS_COLS, accumulate_chunks, group_cells, group_cells_by_class, value_filter
+
+
+def open_census(version: str):
+    """open_soma with longer S3 timeouts (TileDB aborts a read that stalls for 3 s by default)."""
+    import cellxgene_census
+    cfg = {"vfs.s3.request_timeout_ms": 120000, "vfs.s3.connect_timeout_ms": 30000}
+    try:
+        return cellxgene_census.open_soma(census_version=version, tiledb_config=cfg)
+    except TypeError:
+        return cellxgene_census.open_soma(census_version=version)
 
 
 def observed_labels(human, dataset_ids, tissue: str) -> pd.Series:
@@ -55,3 +67,29 @@ def crosscheck_in_memory(census, dataset_ids, tissue: str, labels, counts, donor
         raise ValueError("donor sets differ between streamed and in-memory data")
     G = sparse.csr_matrix((np.ones(len(codes)), (codes, np.arange(len(codes)))), shape=(len(uniq), len(codes)))
     return float(abs((G @ X) - counts).max())
+
+
+def build_tissue(human, dataset_ids, tissue: str, class_labels: dict):
+    """One streamed pass over all requested classes. Returns ({class: (CSR donors x genes, donor table)}, genes)
+    or None if the query is empty. Only practical for small selections (see scripts/build_pseudobulk.py)."""
+    import tiledbsoma as soma
+    label_to_class = {l: c for c, ls in class_labels.items() for l in ls}
+    vf = value_filter(dataset_ids, tissue, sorted(label_to_class))
+    with human.axis_query(measurement_name="RNA", obs_query=soma.AxisQuery(value_filter=vf)) as q:
+        obs = q.obs(column_names=OBS_COLS + ["cell_type"]).concat().to_pandas()
+        if len(obs) == 0:
+            return None
+        classes = obs["cell_type"].astype(str).map(label_to_class)
+        var = (q.var(column_names=["soma_joinid", "feature_id", "feature_name"]).concat().to_pandas()
+               .sort_values("soma_joinid").reset_index(drop=True))
+        table, codes = group_cells_by_class(obs, classes.to_numpy())
+        stream = ((t["soma_dim_0"].to_numpy(), t["soma_dim_1"].to_numpy(), t["soma_data"].to_numpy())
+                  for t in q.X("raw").tables())
+        total = accumulate_chunks(stream, obs["soma_joinid"].to_numpy(), codes, len(table),
+                                  var["soma_joinid"].to_numpy())
+    out = {}
+    for cls in class_labels:
+        rows = (table["cell_class"].to_numpy() == cls).nonzero()[0]
+        if len(rows):
+            out[cls] = (sparse.csr_matrix(total[rows]), table.iloc[rows].drop(columns="cell_class").reset_index(drop=True))
+    return out, var[["feature_id", "feature_name"]]

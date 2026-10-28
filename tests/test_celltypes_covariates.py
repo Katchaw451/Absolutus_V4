@@ -31,6 +31,8 @@ def test_other_cohort_labels_from_the_audit():
     for l, c in expect.items():
         assert celltypes.harmonize(l) == c
     assert celltypes.status("neuron")[0] == "excluded"
+    for l in ("mural cell", "leukocyte", "central nervous system neuron", "ependymal cell"):
+        assert celltypes.status(l)[0] == "excluded", l
     assert celltypes.status("dopaminergic neuron")[0] == "excluded"
 
 
