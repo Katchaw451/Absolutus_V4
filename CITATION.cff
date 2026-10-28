@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Absolutus V4: study-bias-aware network module discovery for neurodegeneration transcriptomics"
+version: 0.1.0
+date-released: 2026-10-28
+license: MIT
+authors:
+  - name: "Katchaw451"
+repository-code: "https://github.com/Katchaw451/Absolutus_V4"
