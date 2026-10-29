@@ -76,7 +76,9 @@ def main():
             continue
         part = Path(f"{final}.part")
         r = subprocess.run(["curl", "-L", "-C", "-", "--fail", "--retry", "30", "--retry-delay", "5",
-                            "--retry-all-errors", "--progress-bar", "-o", str(part), url])
+                            "--retry-all-errors", "--connect-timeout", "30",
+                            "--speed-limit", "102400", "--speed-time", "30",
+                            "--progress-bar", "-o", str(part), url])
         if r.returncode != 0:
             sys.exit(f"download failed (curl exit {r.returncode}); rerun the same command to resume")
         if size is not None and part.stat().st_size != size:
