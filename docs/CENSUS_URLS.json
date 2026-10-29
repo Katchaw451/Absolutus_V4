@@ -1,0 +1,42 @@
+{
+  "6f7fd0f1-a2ed-4ff1-80d3-33dde731cbc3": {
+    "cohort": "sea_ad_dlpfc",
+    "url": "https://cellxgene-census-public-us-west-2.s3.us-west-2.amazonaws.com/cell-census/2025-11-08/h5ads/6f7fd0f1-a2ed-4ff1-80d3-33dde731cbc3.h5ad"
+  },
+  "d3cb449b-c2b1-4b50-a7f1-21203535fe61": {
+    "cohort": "pd_atlas_pfc",
+    "url": "https://cellxgene-census-public-us-west-2.s3.us-west-2.amazonaws.com/cell-census/2025-11-08/h5ads/d3cb449b-c2b1-4b50-a7f1-21203535fe61.h5ad"
+  },
+  "cff99df2-4904-44f7-9173-ff837f95606e": {
+    "cohort": "ad_l4_ba9",
+    "url": "https://cellxgene-census-public-us-west-2.s3.us-west-2.amazonaws.com/cell-census/2025-11-08/h5ads/cff99df2-4904-44f7-9173-ff837f95606e.h5ad"
+  },
+  "2856d06c-0ff9-4e01-bfc9-202b74d0b60f": {
+    "cohort": "pd_kamath_snpc",
+    "url": "https://cellxgene-census-public-us-west-2.s3.us-west-2.amazonaws.com/cell-census/2025-11-08/h5ads/2856d06c-0ff9-4e01-bfc9-202b74d0b60f.h5ad"
+  },
+  "251b1a7e-d050-4486-8d50-4c2619eb0f46": {
+    "cohort": "pd_kamath_snpc",
+    "url": "https://cellxgene-census-public-us-west-2.s3.us-west-2.amazonaws.com/cell-census/2025-11-08/h5ads/251b1a7e-d050-4486-8d50-4c2619eb0f46.h5ad"
+  },
+  "07760522-707a-4a1c-8891-dbd1226d6b27": {
+    "cohort": "pd_kamath_snpc",
+    "url": "https://cellxgene-census-public-us-west-2.s3.us-west-2.amazonaws.com/cell-census/2025-11-08/h5ads/07760522-707a-4a1c-8891-dbd1226d6b27.h5ad"
+  },
+  "f8d8b443-bca6-4c3c-9042-669dfb7f8030": {
+    "cohort": "pd_kamath_snpc",
+    "url": "https://cellxgene-census-public-us-west-2.s3.us-west-2.amazonaws.com/cell-census/2025-11-08/h5ads/f8d8b443-bca6-4c3c-9042-669dfb7f8030.h5ad"
+  },
+  "5829c7ba-697f-418e-8b98-d605b192dc48": {
+    "cohort": "pd_kamath_snpc",
+    "url": "https://cellxgene-census-public-us-west-2.s3.us-west-2.amazonaws.com/cell-census/2025-11-08/h5ads/5829c7ba-697f-418e-8b98-d605b192dc48.h5ad"
+  },
+  "4dd1cd23-fc4d-4fd1-9709-602540f3ca6f": {
+    "cohort": "pd_kamath_snpc",
+    "url": "https://cellxgene-census-public-us-west-2.s3.us-west-2.amazonaws.com/cell-census/2025-11-08/h5ads/4dd1cd23-fc4d-4fd1-9709-602540f3ca6f.h5ad"
+  },
+  "f5be4b96-f5a3-4c3d-84ac-6f69daf744d5": {
+    "cohort": "pd_kamath_snpc",
+    "url": "https://cellxgene-census-public-us-west-2.s3.us-west-2.amazonaws.com/cell-census/2025-11-08/h5ads/f5be4b96-f5a3-4c3d-84ac-6f69daf744d5.h5ad"
+  }
+}
